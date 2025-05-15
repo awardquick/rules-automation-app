@@ -1,42 +1,42 @@
-services:
-  api:
-    build:
-      context: .
-      dockerfile: backend/Dockerfile
-    container_name: rules-backend
-    ports:
-      - "8000:8000"
-    env_file:
-      - .env
-    volumes:
-      - ./backend/app:/app/app
-      - ./backend/alembic:/app/alembic
-      - ./backend/alembic.ini:/app/alembic.ini
-    depends_on:
-      - db
+# services:
+#   api:
+#     build:
+#       context: .
+#       dockerfile: backend/Dockerfile
+#     container_name: rules-backend
+#     ports:
+#       - "8000:8000"
+#     env_file:
+#       - .env
+#     volumes:
+#       - ./backend/app:/app/app
+#       - ./backend/alembic:/app/alembic
+#       - ./backend/alembic.ini:/app/alembic.ini
+#     depends_on:
+#       - db
 
-  db:
-    image: postgres:17.5
-    container_name: rules-db
-    environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: rules_db
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+#   db:
+#     image: postgres:17.5
+#     container_name: rules-db
+#     environment:
+#       POSTGRES_USER: postgres
+#       POSTGRES_PASSWORD: postgres
+#       POSTGRES_DB: rules_db
+#     ports:
+#       - "5432:5432"
+#     volumes:
+#       - postgres_data:/var/lib/postgresql/data
 
-  # frontend:
-  #   build:
-  #     context: ./frontend
-  #   container_name: rules-frontend
-  #   ports:
-  #     - "3000:3000"
-  #   volumes:
-  #     - ./frontend:/app
-  #   stdin_open: true
-  #   tty: true
+#   # frontend:
+#   #   build:
+#   #     context: ./frontend
+#   #   container_name: rules-frontend
+#   #   ports:
+#   #     - "3000:3000"
+#   #   volumes:
+#   #     - ./frontend:/app
+#   #   stdin_open: true
+#   #   tty: true
 
-volumes:
-  postgres_data:
+# volumes:
+#   postgres_data:

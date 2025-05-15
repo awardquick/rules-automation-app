@@ -1,24 +1,31 @@
-from pydantic import BaseModel, ConfigDict
+from typing import Optional, Literal
+from pydantic import BaseModel, ConfigDict, EmailStr
 from datetime import datetime
 
-
 # Shared base schema for all application-related schemas
+
+
 class ApplicationBase(BaseModel):
-    family_status: str  # 'new' or 'returning'
+    family_status: Optional[Literal["new", "returning"]] = None
     business_owner: bool
     filed_us_taxes: bool
     tax_year: int
-    model_config = ConfigDict(from_attributes=True)
 
-# Inherits fields from ApplicationBase
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ApplicationCreate(ApplicationBase):
-    pass
+    applicant_name: str
+    applicant_email: EmailStr
+    submitted_at: Optional[datetime] = None
 
 
 class ApplicationResponse(ApplicationBase):
     id: int
-    submitted_at: datetime
+    applicant_name: str
+    applicant_email: EmailStr
+    submitted_at: Optional[datetime]
+    created_at: datetime
+    updated_at: datetime
 
     model_config = ConfigDict(from_attributes=True)

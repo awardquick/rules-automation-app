@@ -1,4 +1,4 @@
-import type { SectionHeaderProps } from "../types/rule";
+import type { SectionHeaderProps } from "../types/generic";
 import { Play } from "lucide-react";
 const colorMap = {
   primary: "#755DC8",

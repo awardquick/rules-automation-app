@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from pydantic import BaseModel, ConfigDict
 
 
@@ -19,4 +19,5 @@ class EvaluationResponse(EvaluationBase):
     action_taken: str
     evaluated_at: datetime
 
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True,
+                              arbitrary_types_allowed=True)

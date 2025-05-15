@@ -7,6 +7,8 @@ class Application(Base):
     __tablename__ = "applications"
 
     id = Column(Integer, primary_key=True, index=True)
+    applicant_name = Column(String, nullable=False)
+    applicant_email = Column(String, nullable=False)
     family_status = Column(String)
     business_owner = Column(Boolean)
     filed_us_taxes = Column(Boolean)

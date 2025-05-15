@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useRuleContext } from "../context/RuleContext";
 
 const ActionBuilder: React.FC = () => {
-  const [documentType, setDocumentType] = useState("");
+  const [type, setType] = useState("");
   const [description, setDescription] = useState("");
   const { addAction, actions } = useRuleContext();
 
@@ -11,8 +11,8 @@ const ActionBuilder: React.FC = () => {
       <div className="flex items-center gap-4">
         <select
           className="border border-gray-300 rounded w-[318px] h-10 px-4 py-2 ml-10 text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary text-sm"
-          value={documentType}
-          onChange={(e) => setDocumentType(e.target.value)}
+          value={type}
+          onChange={(e) => setType(e.target.value)}
         >
           <option value="">Select Document Type</option>
           <option value="Business Tax Documents">Business Tax Documents</option>
@@ -30,9 +30,9 @@ const ActionBuilder: React.FC = () => {
         <button
           className="text-[#755DC8] rounded mt-4"
           onClick={() =>
-            documentType &&
+            type &&
             addAction({
-              documentType,
+              type,
               description,
             })
           }
@@ -43,7 +43,7 @@ const ActionBuilder: React.FC = () => {
       <div className="mt-4 ml-10">
         {actions.map((action, idx) => (
           <p key={idx}>
-            • {action.documentType}: {action.description}
+            • {action.type}: {action.description}
           </p>
         ))}
       </div>

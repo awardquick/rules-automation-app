@@ -1,11 +1,11 @@
-
 import re
 from typing import List
 from sqlalchemy.orm import Session
-from models.rule import Rule
-from schemas.application import ApplicationCreate
-from models.application import Application
-from models.evaluation import Evaluation
+from app.models.rule import Rule, rule_conditions
+from app.schemas.application import ApplicationCreate
+from app.models.application import Application
+from app.models.evaluation import Evaluation
+from app.models.condition import ConditionType
 from datetime import datetime
 
 
@@ -18,40 +18,44 @@ class RuleEngine:
         rules = self.db.query(Rule).filter(Rule.is_active == True).all()
 
         for rule in rules:
-            print(f"Evaluating Rule Condition: {rule.condition}")
-            if self.evaluate_condition(application_data, rule.condition):
-                applicable_evaluations.append(rule.action)
-
+            if self.evaluate_rule_conditions(application_data, rule):
+                # Create document request
                 evaluation = Evaluation(
                     application_id=application_record.id,
                     rule_id=rule.id,
-                    action_taken=rule.action,
+                    action_taken=f"Request document: {rule.action}",
                     evaluated_at=datetime.utcnow()
                 )
                 self.db.add(evaluation)
+                applicable_evaluations.append(evaluation)
+
         self.db.commit()
         return applicable_evaluations
 
-    def evaluate_condition(self, application: ApplicationCreate, condition: str) -> bool:
+    def evaluate_rule_conditions(self, application: ApplicationCreate, rule: Rule) -> bool:
+        # Get all conditions for this rule with their values
+        rule_condition_values = self.db.query(rule_conditions).filter(
+            rule_conditions.c.rule_id == rule.id
+        ).all()
+
+        for condition_value in rule_condition_values:
+            condition_type = self.db.query(ConditionType).get(
+                condition_value.condition_type_id)
+            if not self.evaluate_condition(application, condition_type, condition_value.value, condition_value.year):
+                return False
+        return True
+
+    def evaluate_condition(self, application: ApplicationCreate, condition_type: ConditionType, value: str, year: int = None) -> bool:
         try:
-            condition = condition.lower().strip()
-
-            if condition == "family_status == new":
-                return application.family_status.lower() == "new"
-            elif condition == "family_status == returning":
-                return application.family_status.lower() == "returning"
-            elif condition == "business_owner == true":
-                return application.business_owner is True
-            elif "did not file us taxes in" in condition:
-                match = re.search(
-                    r"did not file us taxes in (\d{4})", condition)
-                if match:
-                    year = int(match.group(1))
-                    return application.filed_us_taxes is False and application.tax_year == year
-                return False
-            else:
-                return False
-
+            if condition_type.data_type == "boolean":
+                return getattr(application, condition_type.field) == (value.lower() == "true")
+            elif condition_type.data_type == "enum":
+                return getattr(application, condition_type.field).lower() == value.lower()
+            elif condition_type.data_type == "year_boolean":
+                if year is None:
+                    return False
+                return (not getattr(application, condition_type.field)) and getattr(application, condition_type.year_field) == year
+            return False
         except Exception as e:
             print(f"Error evaluating condition: {e}")
             return False
