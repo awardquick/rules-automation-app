@@ -1,4 +1,5 @@
-from pydantic import BaseModel
+import datetime
+from pydantic import BaseModel, ConfigDict
 
 
 class EvaluationBase(BaseModel):
@@ -13,7 +14,9 @@ class EvaluationCreate(EvaluationBase):
 
 class EvaluationResponse(EvaluationBase):
     id: int
+    application_id: int
+    rule_id: int
+    action_taken: str
     evaluated_at: datetime
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
