@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { useRuleContext } from "../context/RuleContext";
 import { createRule } from "../api/rule";
 import { useNavigate } from "react-router-dom";
-import type { RuleConditionInput } from "../types/rule";
+import apiClient from "../api/client";
 
 const RuleEditor: React.FC = () => {
   const navigate = useNavigate();
@@ -21,15 +21,24 @@ const RuleEditor: React.FC = () => {
   useEffect(() => {
     const fetchMatchingApplicants = async () => {
       try {
-        const response = await fetch("/api/applicants/match-count");
-        const data = await response.json();
+        const { data } = await apiClient.post("/applicants/match-count", {
+          conditions: conditions.map((condition) => ({
+            field: condition.field,
+            value: condition.value,
+            year: condition.year,
+          })),
+        });
         setMatchingApplicants(data.count);
       } catch (error) {
         console.error("Failed to fetch matching applicants:", error);
       }
     };
 
-    fetchMatchingApplicants();
+    if (conditions.length > 0) {
+      fetchMatchingApplicants();
+    } else {
+      setMatchingApplicants(0);
+    }
   }, [conditions]);
 
   const handleCancel = () => {
@@ -56,8 +65,6 @@ const RuleEditor: React.FC = () => {
     setError(null);
 
     try {
-      console.log("Conditions:", conditions);
-      console.log("Actions:", actions);
       const rule = {
         name: ruleName,
         description: ruleDescription,
@@ -69,7 +76,6 @@ const RuleEditor: React.FC = () => {
         action: actions[0].type,
         action_description: actions[0].description,
       };
-      console.log("Rule to create:", rule);
 
       await createRule(rule);
       navigate("/");

@@ -1,6 +1,8 @@
 from sqlalchemy.orm import Session
 from app.models.condition import ConditionType
 from app.models.rule import Rule, rule_conditions
+from app.models.application import Application
+from datetime import datetime
 
 
 def seed_condition_types(db: Session):
@@ -117,3 +119,126 @@ def seed_sample_rule(db: Session):
 
     db.commit()
     print("Seeded sample rules successfully")
+
+
+def seed_applications(db: Session):
+    # Check if we already have applications
+    existing = db.query(Application).first()
+    if existing:
+        print("Applications already seeded")
+        return
+
+    # Define sample applications
+    applications = [
+        # Business owners who filed taxes
+        Application(
+            applicant_name="John Smith",
+            applicant_email="john.smith@example.com",
+            family_status="New",
+            business_owner=True,
+            filed_us_taxes=True,
+            tax_year=2023,
+            submitted_at=datetime(2024, 1, 15, 10, 0, 0)
+        ),
+        Application(
+            applicant_name="Sarah Johnson",
+            applicant_email="sarah.j@example.com",
+            family_status="Returning",
+            business_owner=True,
+            filed_us_taxes=True,
+            tax_year=2022,
+            submitted_at=datetime(2024, 1, 20, 14, 30, 0)
+        ),
+        # Business owners who didn't file taxes
+        Application(
+            applicant_name="Mike Brown",
+            applicant_email="mike.b@example.com",
+            family_status="New",
+            business_owner=True,
+            filed_us_taxes=False,
+            tax_year=2023,
+            submitted_at=datetime(2024, 2, 1, 9, 15, 0)
+        ),
+        # Non-business owners who filed taxes
+        Application(
+            applicant_name="Emily Davis",
+            applicant_email="emily.d@example.com",
+            family_status="Returning",
+            business_owner=False,
+            filed_us_taxes=True,
+            tax_year=2023,
+            submitted_at=datetime(2024, 2, 5, 11, 45, 0)
+        ),
+        Application(
+            applicant_name="David Wilson",
+            applicant_email="david.w@example.com",
+            family_status="New",
+            business_owner=False,
+            filed_us_taxes=True,
+            tax_year=2022,
+            submitted_at=datetime(2024, 2, 10, 16, 20, 0)
+        ),
+        # Non-business owners who didn't file taxes
+        Application(
+            applicant_name="Lisa Anderson",
+            applicant_email="lisa.a@example.com",
+            family_status="Returning",
+            business_owner=False,
+            filed_us_taxes=False,
+            tax_year=2023,
+            submitted_at=datetime(2024, 2, 15, 13, 10, 0)
+        ),
+        # Different family statuses
+        Application(
+            applicant_name="Robert Taylor",
+            applicant_email="robert.t@example.com",
+            family_status="New",
+            business_owner=True,
+            filed_us_taxes=True,
+            tax_year=2023,
+            submitted_at=datetime(2024, 2, 20, 15, 30, 0)
+        ),
+        Application(
+            applicant_name="Jennifer Martinez",
+            applicant_email="jennifer.m@example.com",
+            family_status="Returning",
+            business_owner=False,
+            filed_us_taxes=True,
+            tax_year=2022,
+            submitted_at=datetime(2024, 2, 25, 10, 45, 0)
+        ),
+        # Different tax years
+        Application(
+            applicant_name="James Thompson",
+            applicant_email="james.t@example.com",
+            family_status="New",
+            business_owner=True,
+            filed_us_taxes=True,
+            tax_year=2021,
+            submitted_at=datetime(2024, 3, 1, 9, 0, 0)
+        ),
+        Application(
+            applicant_name="Patricia Garcia",
+            applicant_email="patricia.g@example.com",
+            family_status="Returning",
+            business_owner=False,
+            filed_us_taxes=False,
+            tax_year=2021,
+            submitted_at=datetime(2024, 3, 5, 14, 15, 0)
+        )
+    ]
+
+    # Add to database
+    for application in applications:
+        db.add(application)
+
+    db.commit()
+    print("Seeded applications successfully")
+
+
+def seed_all(db: Session):
+    """Run all seed functions"""
+    seed_condition_types(db)
+    seed_sample_rule(db)
+    seed_applications(db)
+    print("All seeding completed successfully")

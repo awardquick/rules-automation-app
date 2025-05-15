@@ -14,9 +14,12 @@ export const RuleProvider: React.FC<{ children: React.ReactNode }> = ({
 
   useEffect(() => {
     const loadConditions = async () => {
-      const fetchedConditions = await getConditions();
-      console.log(fetchedConditions);
-      setConditionTypes(fetchedConditions);
+      try {
+        const fetchedConditions = await getConditions();
+        setConditionTypes(fetchedConditions);
+      } catch (error) {
+        console.error("Failed to load conditions:", error);
+      }
     };
 
     loadConditions();
@@ -38,16 +41,44 @@ export const RuleProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const addConditionToRule = (condition: RuleCondition) => {
-    console.log("Adding condition to rule:", condition);
     setConditions((prev) => {
-      const newConditions = [...prev, condition];
-      console.log("Updated conditions:", newConditions);
-      return newConditions;
+      // Check if condition already exists
+      const exists = prev.some(
+        (c) =>
+          c.field === condition.field &&
+          c.value === condition.value &&
+          c.year === condition.year
+      );
+
+      if (exists) {
+        return prev;
+      }
+
+      return [...prev, condition];
     });
   };
 
+  const removeCondition = (index: number) => {
+    setConditions((prev) => prev.filter((_, i) => i !== index));
+  };
+
   const addAction = (action: Action) => {
-    setActions([...actions, action]);
+    setActions((prev) => {
+      // Check if action already exists
+      const exists = prev.some(
+        (a) => a.type === action.type && a.description === action.description
+      );
+
+      if (exists) {
+        return prev;
+      }
+
+      return [...prev, action];
+    });
+  };
+
+  const removeAction = (index: number) => {
+    setActions((prev) => prev.filter((_, i) => i !== index));
   };
 
   return (
@@ -58,7 +89,9 @@ export const RuleProvider: React.FC<{ children: React.ReactNode }> = ({
         conditionTypes,
         createCondition,
         addConditionToRule,
+        removeCondition,
         addAction,
+        removeAction,
       }}
     >
       {children}
@@ -68,7 +101,7 @@ export const RuleProvider: React.FC<{ children: React.ReactNode }> = ({
 
 export const useRuleContext = () => {
   const context = useContext(RuleContext);
-  if (!context) {
+  if (context === undefined) {
     throw new Error("useRuleContext must be used within a RuleProvider");
   }
   return context;

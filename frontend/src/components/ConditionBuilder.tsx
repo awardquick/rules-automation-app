@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useRuleContext } from "../context/RuleContext";
-import type { Condition, RuleCondition } from "../types/condition";
+import type { RuleCondition } from "../types/condition";
 
 const ConditionBuilder: React.FC = () => {
   const [selectedField, setSelectedField] = useState("");
@@ -8,10 +8,8 @@ const ConditionBuilder: React.FC = () => {
   const [selectedYear, setSelectedYear] = useState<number>(
     new Date().getFullYear()
   );
-  const { conditionTypes, addConditionToRule } = useRuleContext();
-  const [selectedConditions, setSelectedConditions] = useState<RuleCondition[]>(
-    []
-  );
+  const { conditionTypes, addConditionToRule, removeCondition, conditions } =
+    useRuleContext();
 
   const handleAddCondition = () => {
     if (!selectedField || selectedValue === "") return;
@@ -27,8 +25,8 @@ const ConditionBuilder: React.FC = () => {
           selectedType.data_type === "year_boolean" ? selectedYear : undefined,
         condition_type_id: selectedType.id,
       };
-      setSelectedConditions([...selectedConditions, newCondition]);
       addConditionToRule(newCondition);
+      // Reset form
       setSelectedField("");
       setSelectedValue("");
       setSelectedYear(new Date().getFullYear());
@@ -127,7 +125,7 @@ const ConditionBuilder: React.FC = () => {
         {selectedField && renderValueInput()}
       </div>
       <div className="mt-4">
-        {selectedConditions.map((condition, idx) => {
+        {conditions.map((condition: RuleCondition, idx: number) => {
           const type = conditionTypes.find((t) => t.field === condition.field);
           return (
             <div key={idx} className="flex items-center gap-2 mb-2">
@@ -135,6 +133,12 @@ const ConditionBuilder: React.FC = () => {
               <span className="text-gray-900 font-medium">
                 {formatConditionValue(condition)}
               </span>
+              <button
+                onClick={() => removeCondition(idx)}
+                className="text-red-500 hover:text-red-700 ml-2"
+              >
+                Remove
+              </button>
             </div>
           );
         })}

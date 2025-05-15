@@ -1,17 +1,18 @@
 import type { Condition, RuleCondition } from "./condition";
 
-export interface Action {
+export type Action = {
     type: string;
     description: string;
-}
+};
 
 export interface RuleContextType {
     conditions: RuleCondition[];
     actions: Action[];
     conditionTypes: Condition[];
-    createCondition: (condition: Condition) => Promise<void>;
     addConditionToRule: (condition: RuleCondition) => void;
+    removeCondition: (index: number) => void;
     addAction: (action: Action) => void;
+    removeAction: (index: number) => void;
 }
 
 export type RuleConditionInput = {

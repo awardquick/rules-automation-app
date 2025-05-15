@@ -15,13 +15,10 @@ const Home: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        console.log("Fetching rules and conditions...");
         const [rulesData, conditionTypesData] = await Promise.all([
           getRules(),
           getConditions(),
         ]);
-        console.log("Rules data:", rulesData);
-        console.log("Condition types data:", conditionTypesData);
         setRules(rulesData);
         setConditionTypes(conditionTypesData);
       } catch (error) {
