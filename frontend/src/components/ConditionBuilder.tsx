@@ -8,6 +8,7 @@ const ConditionBuilder: React.FC = () => {
   const [selectedYear, setSelectedYear] = useState<number>(
     new Date().getFullYear()
   );
+
   const { conditionTypes, addConditionToRule, removeCondition, conditions } =
     useRuleContext();
 

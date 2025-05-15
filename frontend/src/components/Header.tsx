@@ -1,4 +1,5 @@
 import { ArrowLeft } from "lucide-react";
+import { useRuleContext } from "../context/RuleContext";
 
 interface HeaderProps {
   onCancel: () => void;
@@ -13,6 +14,9 @@ const Header: React.FC<HeaderProps> = ({
   onBack,
   isSaving = false,
 }) => {
+  const { actions, conditions } = useRuleContext();
+  const noActionsOrConditions = actions.length === 0 || conditions.length === 0;
+  const isDisabled = noActionsOrConditions || isSaving;
   return (
     <header className="flex justify-between items-center w-full p-6 bg-white border-b border-gray-200">
       {/* Left Section: Back Arrow and Title */}
@@ -33,7 +37,7 @@ const Header: React.FC<HeaderProps> = ({
         </button>
         <button
           onClick={onSave}
-          disabled={isSaving}
+          disabled={isDisabled}
           className="text-white bg-[#755DC8] px-4 py-2 rounded hover:bg-[#6849C2] disabled:opacity-50"
         >
           {isSaving ? "Saving..." : "Save and Enable Rule"}
