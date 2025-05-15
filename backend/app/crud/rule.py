@@ -34,7 +34,26 @@ def create_rule(db: Session, rule: RuleCreate) -> RuleResponse:
 
     db.commit()
     db.refresh(db_rule)
-    return db_rule
+
+    # Convert to response model
+    return {
+        "id": db_rule.id,
+        "name": db_rule.name,
+        "description": db_rule.description,
+        "is_active": db_rule.is_active,
+        "created_at": db_rule.created_at,
+        "updated_at": db_rule.updated_at,
+        "action": db_rule.action,
+        "action_description": db_rule.action_description,
+        "conditions": [
+            {
+                "condition_type_id": c.condition_type_id,
+                "value": c.value,
+                "year": c.year
+            }
+            for c in db.query(rule_conditions).filter(rule_conditions.c.rule_id == db_rule.id).all()
+        ]
+    }
 
 
 def get_rules(db: Session, skip: int = 0, limit: int = 100):
