@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import type { Condition, RuleCondition } from "../types/condition";
 import type { Action, RuleContextType } from "../types/rule";
-import { getConditions, addCondition } from "../api/condition";
+import { getConditions } from "../api/condition";
 
 const RuleContext = createContext<RuleContextType | undefined>(undefined);
 
@@ -25,20 +25,20 @@ export const RuleProvider: React.FC<{ children: React.ReactNode }> = ({
     loadConditions();
   }, []);
 
-  const createCondition = async (newCondition: Condition) => {
-    try {
-      const savedCondition = await addCondition(newCondition);
-      const ruleCondition: RuleCondition = {
-        field: savedCondition.field,
-        value: savedCondition.value as string,
-        year: savedCondition.year,
-        condition_type_id: savedCondition.id,
-      };
-      setConditions((prev) => [...prev, ruleCondition]);
-    } catch (error) {
-      console.error("Failed to add condition:", error);
-    }
-  };
+  // const createCondition = async (newCondition: Condition) => {
+  //   try {
+  //     const savedCondition = await addCondition(newCondition);
+  //     const ruleCondition: RuleCondition = {
+  //       field: savedCondition.field,
+  //       value: savedCondition.value as string,
+  //       year: savedCondition.year,
+  //       condition_type_id: savedCondition.id,
+  //     };
+  //     setConditions((prev) => [...prev, ruleCondition]);
+  //   } catch (error) {
+  //     console.error("Failed to add condition:", error);
+  //   }
+  // };
 
   const addConditionToRule = (condition: RuleCondition) => {
     setConditions((prev) => {
@@ -87,7 +87,6 @@ export const RuleProvider: React.FC<{ children: React.ReactNode }> = ({
         conditions,
         actions,
         conditionTypes,
-        createCondition,
         addConditionToRule,
         removeCondition,
         addAction,

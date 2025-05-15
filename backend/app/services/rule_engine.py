@@ -54,11 +54,11 @@ class RuleEngine:
                 condition_value.condition_type_id)
             print(
                 f"Condition type: {condition_type.name} ({condition_type.data_type})")
-            if not self.evaluate_condition(application, condition_type, condition_value.value, condition_value.year):
+            if self.evaluate_condition(application, condition_type, condition_value.value, condition_value.year):
                 print(f"Condition did not match")
-                return False
+                return True
             print(f"Condition matched")
-        return True
+        return False
 
     def evaluate_condition(self, application: ApplicationCreate, condition_type: ConditionType, value: str, year: int = None) -> bool:
         try:
